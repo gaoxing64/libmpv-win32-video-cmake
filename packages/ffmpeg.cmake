@@ -265,6 +265,9 @@ ExternalProject_Add(ffmpeg
         --enable-filter=overlay
         --enable-filter=equalizer
 
+        --enable-filter=dynaudnorm
+        --enable-filter=loudnorm
+
         --enable-protocol=async
         --enable-protocol=cache
         --enable-protocol=crypto
