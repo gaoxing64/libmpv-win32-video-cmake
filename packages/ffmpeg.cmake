@@ -267,6 +267,7 @@ ExternalProject_Add(ffmpeg
 
         --enable-filter=dynaudnorm
         --enable-filter=loudnorm
+        --enable-filter=aresample
 
         --enable-filter=alimiter
         --enable-filter=acompressor
