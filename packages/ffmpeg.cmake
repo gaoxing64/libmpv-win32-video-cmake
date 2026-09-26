@@ -268,6 +268,9 @@ ExternalProject_Add(ffmpeg
         --enable-filter=dynaudnorm
         --enable-filter=loudnorm
 
+        --enable-filter=alimiter
+        --enable-filter=acompressor
+
         --enable-protocol=async
         --enable-protocol=cache
         --enable-protocol=crypto
