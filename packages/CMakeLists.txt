@@ -24,6 +24,7 @@ list(APPEND ep
     x264
     x265
     libiconv
+    luajit
     fribidi
     expat
     nettle
