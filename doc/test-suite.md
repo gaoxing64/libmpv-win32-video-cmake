@@ -23,8 +23,10 @@ CI：`.github/workflows/mpv_clang.yml`（手动）；工具链先跑 `llvm_clang
 | TC-W-02 | 产物解包 | `7z l mpv-x86_64-*.7z` | 含 `mpv.exe`、`mpv.com`、`fonts.conf`、manual |
 | TC-W-03 | dev 包 | 检查 `mpv-dev-x86_64-*` | 含 `libmpv-2.dll`、`libmpv.dll.a`、`render_dxgi.h` |
 | TC-W-04 | DLL 架构 | `objdump -f libmpv-2.dll`（或 Dependencies） | Machine 与目标 arch 一致 |
-| TC-W-05 | 滤镜 | `strings libmpv-2.dll \| grep -E 'loudnorm\|aresample'` | 命中；缺失即滤镜未编入 |
-| TC-W-06 | Lua | `strings libmpv-2.dll \| grep -i lua` | 命中（`mpv` 目标）；`mpv-release` 目标允许缺失 |
+| TC-W-05 | 滤镜 | `sh scripts/verify_libmpv_artifacts.sh libmpv-2.dll --config-log <ffbuild/config.log>` | loudnorm/aresample/alimiter/acompressor 均 PASS |
+| TC-W-06 | Lua/stats.lua | 同上，检查 `display-stats-toggle`、`display-page-1-toggle` | 均 PASS（stats.lua 内置；`mpv` 与 `mpv-release` 两个目标都要有） |
+| TC-W-06b | 编解码器 | 同上，检查 `h264`/`hevc`/`av1`/`libdav1d` | 均 PASS |
+| TC-W-06c | AV1 parser | 同上，查 configure 日志 `--enable-parser=av1` | PASS；二进制里 av1 与解码器同名，只能查日志 |
 | TC-W-07 | DXGI | `dumpbin /exports libmpv-2.dll` 或头文件检查 | 存在 DXGI render API 入口 |
 | TC-W-08 | 播放 | Windows 运行 `mpv.exe <直播流>` | 起播、有声、可 seek |
 | TC-W-09 | 嵌入 | media-kit Windows 示例播放 | 画面嵌入窗口，不另开窗口 |
