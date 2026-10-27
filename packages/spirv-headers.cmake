@@ -3,7 +3,9 @@ ExternalProject_Add(spirv-headers
     SOURCE_DIR ${SOURCE_LOCATION}
     GIT_CLONE_FLAGS "--filter=tree:0"
     GIT_REMOTE_NAME origin
-    GIT_TAG main
+    # Pinned to the revision shaderc expects (google/shaderc DEPS); see
+    # packages/spirv-tools.cmake for why these must stay in sync.
+    GIT_TAG 86f980c731e62ae4eaf383d320449d71687936bf
     UPDATE_COMMAND ""
     CONFIGURE_COMMAND ${EXEC} CONF=1 cmake -H<SOURCE_DIR> -B<BINARY_DIR>
         -G Ninja
