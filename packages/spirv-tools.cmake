@@ -6,7 +6,7 @@ ExternalProject_Add(spirv-tools
     # Pinned to the revision shaderc expects (google/shaderc DEPS). Tracking
     # main here made the two drift apart and broke shaderc's build with
     # "no member named 'StorageClassToString' in namespace 'spvtools'".
-    GIT_TAG 71f287f18ed78d496e724fbfb1c3feae3a2af75a
+    GIT_TAG main
     UPDATE_COMMAND ""
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
