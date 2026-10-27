@@ -4,7 +4,10 @@ ExternalProject_Add(glslang
     GIT_CLONE_FLAGS "--sparse --filter=tree:0"
     GIT_CLONE_POST_COMMAND "sparse-checkout set --no-cone /* !Test"
     GIT_REMOTE_NAME origin
-    GIT_TAG main
+    # Pinned to the revision shaderc expects (google/shaderc DEPS). Tracking
+    # main here let the shader toolchain versions drift apart and broke the
+    # shaderc build.
+    GIT_TAG 73b25650df6dc4545966674531e6b7cc8f5d2407
     UPDATE_COMMAND ""
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
