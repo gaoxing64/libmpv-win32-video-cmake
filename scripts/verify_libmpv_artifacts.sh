@@ -41,18 +41,12 @@ done
 
 binary="${1:-}"
 label="${2:-$(basename "$binary" 2>/dev/null || echo unknown)}"
-if [ -z "$binary" ] || [ ! -f "$binary" ]; then
+if [ -z "$binary" ] || { [ ! -f "$binary" ] && [ ! -d "$binary" ]; }; then
 	echo "ERROR: libmpv binary not found: ${binary:-<empty>}" >&2
 	exit 2
 fi
 
 failures=0
-
-# has <needle>: the needle appears in the binary. Lua scripts are embedded as one
-# long C string literal, so plain substring matching also covers their identifiers.
-has() {
-	grep -aqF "$1" "$binary"
-}
 
 check() {
 	group="$1"
@@ -67,6 +61,26 @@ check() {
 }
 
 echo "artifact: $label"
+
+# The Darwin build ships libmpv as a set of dylibs (libmpv, libavcodec, libdav1d,
+# ...), and the filter/Lua/codec symbols live in whichever of them the linker
+# pulled them into. Scan every dylib in the tree and treat a hit in any of them
+# as present.
+scan_paths=""
+if [ -d "$binary" ]; then
+	scan_paths=$(find "$binary" \( -name '*.dylib' -o -name '*.so' -o -name '*.dll' \) -type f)
+else
+	scan_paths="$binary"
+fi
+
+has() {
+	for path in $scan_paths; do
+		if grep -aqF "$1" "$path"; then
+			return 0
+		fi
+	done
+	return 1
+}
 
 controls_failed=0
 for control in h264 hevc aac mp3 equalizer overlay scale volume; do
@@ -110,7 +124,6 @@ if [ -n "$config_log" ]; then
 		failures=$((failures + 1))
 	fi
 fi
-
 # Some builds record the FFmpeg flags in a meson recipe rather than in a log the
 # artifact ships. Accept those sources too so the parser check stays meaningful.
 for source in $config_sources; do
