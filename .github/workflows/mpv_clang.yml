@@ -139,21 +139,11 @@ jobs:
             echo "No libmpv-2.dll was produced."
             exit 1
           fi
-          # FFmpeg writes its configure log to <build dir>/ffbuild/config.log; the
-          # build dir name depends on the ExternalProject layout, so match on the
-          # ffbuild part only and fall back to any config.log under ffmpeg.
-          config_log=$(find build_$BIT -path '*/ffbuild/config.log' -type f | head -n1)
-          if [[ -z "$config_log" ]]; then
-            config_log=$(find build_$BIT -path '*ffmpeg*' -name 'config.log' -type f | head -n1)
-          fi
-          if [[ -z "$config_log" ]]; then
-            echo "No ffmpeg configure log was produced."
-            echo "config.log candidates:"
-            find build_$BIT -name 'config.log' -type f | head -n5
-            exit 1
-          fi
-          echo "using config log: $config_log"
-          sh scripts/verify_libmpv_artifacts.sh --config-log "$config_log" \
+          # FFmpeg is configured with CONF=1, which suppresses its config.log, so
+          # assert the AV1 parser flag in the build recipe instead. It cannot be
+          # told apart from the decoder name inside the binary.
+          sh scripts/verify_libmpv_artifacts.sh \
+            --config-source packages/ffmpeg.cmake \
             "$dll" "windows-$BIT"
 
       - name: Collecting logs
