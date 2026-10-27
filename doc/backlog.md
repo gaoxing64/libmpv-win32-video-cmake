@@ -23,6 +23,7 @@
 | P1-5 | x86_64_v3 与 x86_64 同名 arch，仅靠 `-v3` 后缀区分 | `mpv_clang.yml:46-50` | 产物命名与消费侧核对 |
 | P1-6 | FFmpeg 以 `CONF=1` 配置，不产出 `config.log`，AV1 parser 只能查构建配方 | `packages/ffmpeg.cmake`；CI `Verifying libmpv feature set` | 校验步骤用 `--config-source packages/ffmpeg.cmake` |
 | P1-7 | aarch64 编译 openal-soft 的 wave.cpp 时 clang 崩溃（exit 139） | `openal-soft-build-out.log` | 已移除 ffmpeg 对 openal-soft 的多余依赖：ffmpeg 未启用 `--enable-openal`，mpv 也禁用 openal |
+| P1-8 | 着色器工具链四个包各自跟踪 `main`，版本漂移后 shaderc 编译失败（`no member named 'StorageClassToString' in namespace 'spvtools'`） | `packages/shaderc.cmake` | 已统一固定到 google/shaderc DEPS 指定的一组 revision；升级时四个包要一起换 |
 
 ## P2 — 可维护性
 
