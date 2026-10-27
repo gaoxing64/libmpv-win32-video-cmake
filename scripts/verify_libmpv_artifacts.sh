@@ -68,7 +68,12 @@ echo "artifact: $label"
 # as present.
 scan_paths=""
 if [ -d "$binary" ]; then
-	scan_paths=$(find "$binary" \( -name '*.dylib' -o -name '*.so' -o -name '*.dll' \) -type f)
+	# The Darwin xcframeworks packages rename each dylib into a framework
+	# bundle (libavfilter.59.dylib -> Avfilter.framework/Versions/A/Avfilter),
+	# so file names are not a reliable selector here. Scan every regular file;
+	# grep only matches inside binaries that actually contain the needle.
+	scan_paths=$(find "$binary" -type f -size +1k ! -name '*.h' ! -name '*.a' \
+		! -name '*.modulemap' ! -name '*.plist' ! -name '*.json' ! -name '*.txt')
 else
 	scan_paths="$binary"
 fi
