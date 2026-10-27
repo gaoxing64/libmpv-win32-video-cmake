@@ -20,32 +20,18 @@ on:
         required: false
         default: false
         type: boolean
-      arch:
-        description: 'Which architecture to build (single arch jobs use less memory)'
-        required: false
-        default: 'all'
-        type: choice
-        options:
-          - all
-          - i686
-          - x86_64
-          - x86_64_v3
-          - aarch64
 
 jobs:
   build_mpv:
     name: Building mpv
     runs-on: ubuntu-latest
-    if: >-
-      ${{ github.event.workflow_run.conclusion != 'failure'
-          && (github.event.inputs.arch == '' || github.event.inputs.arch == 'all' || github.event.inputs.arch == matrix.bit) }}
+    if: ${{ github.event.workflow_run.conclusion != 'failure' }}
     strategy:
       fail-fast: false
       matrix:
         bit: [i686, x86_64, x86_64_v3, aarch64]
     env:
       BIT: ${{ matrix.bit }}
-      WANTED_ARCH: ${{ github.event.inputs.arch || 'all' }}
     container:
       image: docker://ghcr.io/shinchiro/archlinux:latest
     outputs:
@@ -153,21 +139,11 @@ jobs:
             echo "No libmpv-2.dll was produced."
             exit 1
           fi
-          # FFmpeg writes its configure log to <build dir>/ffbuild/config.log; the
-          # build dir name depends on the ExternalProject layout, so match on the
-          # ffbuild part only and fall back to any config.log under ffmpeg.
-          config_log=$(find build_$BIT -path '*/ffbuild/config.log' -type f | head -n1)
-          if [[ -z "$config_log" ]]; then
-            config_log=$(find build_$BIT -path '*ffmpeg*' -name 'config.log' -type f | head -n1)
-          fi
-          if [[ -z "$config_log" ]]; then
-            echo "No ffmpeg configure log was produced."
-            echo "config.log candidates:"
-            find build_$BIT -name 'config.log' -type f | head -n5
-            exit 1
-          fi
-          echo "using config log: $config_log"
-          sh scripts/verify_libmpv_artifacts.sh --config-log "$config_log" \
+          # FFmpeg is configured with CONF=1, which suppresses its config.log, so
+          # assert the AV1 parser flag in the build recipe instead. It cannot be
+          # told apart from the decoder name inside the binary.
+          sh scripts/verify_libmpv_artifacts.sh \
+            --config-source packages/ffmpeg.cmake \
             "$dll" "windows-$BIT"
 
       - name: Collecting logs
