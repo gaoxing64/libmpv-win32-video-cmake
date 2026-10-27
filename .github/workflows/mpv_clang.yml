@@ -30,13 +30,16 @@ jobs:
   build_mpv:
     name: Building mpv
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion != 'failure' }}
+    if: >-
+      ${{ github.event.workflow_run.conclusion != 'failure'
+          && contains(format(',{0},', github.event.inputs.bits || 'i686,x86_64,x86_64_v3,aarch64'), format(',{0},', matrix.bit)) }}
     strategy:
       fail-fast: false
       matrix:
-        bit: ${{ fromJson(format('["{0}"]', join(split(github.event.inputs.bits || 'i686,x86_64,x86_64_v3,aarch64', ','))) }} }}
+        bit: [i686, x86_64, x86_64_v3, aarch64]
     env:
       BIT: ${{ matrix.bit }}
+      WANTED_BITS: ${{ github.event.inputs.bits || 'i686,x86_64,x86_64_v3,aarch64' }}
     container:
       image: docker://ghcr.io/shinchiro/archlinux:latest
     outputs:
