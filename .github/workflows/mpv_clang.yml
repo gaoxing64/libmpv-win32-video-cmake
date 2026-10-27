@@ -130,6 +130,22 @@ jobs:
           fi
           mv "${artifacts[@]}" release_$BIT
 
+      - name: Verifying libmpv feature set
+        run: |
+          shopt -s nullglob
+          dlls=(build_$BIT/mpv-dev/libmpv-2.dll)
+          if ((${#dlls[@]} == 0)); then
+            echo "No libmpv-2.dll was produced."
+            exit 1
+          fi
+          config_logs=(build_$BIT/packages/ffmpeg-prefix/src/ffmpeg-build/ffbuild/config.log)
+          if ((${#config_logs[@]} == 0)); then
+            echo "No ffmpeg configure log was produced."
+            exit 1
+          fi
+          sh scripts/verify_libmpv_artifacts.sh --config-log "${config_logs[0]}" \
+            "${dlls[0]}" "windows-$BIT"
+
       - name: Collecting logs
         if: always()
         run: |

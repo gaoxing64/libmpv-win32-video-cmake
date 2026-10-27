@@ -248,6 +248,7 @@ ExternalProject_Add(ffmpeg
         --enable-parser=h263
         --enable-parser=h264
         --enable-parser=hevc
+        --enable-parser=av1
         --enable-parser=mpeg4
         --enable-parser=mpeg4video
         --enable-parser=mpegvideo

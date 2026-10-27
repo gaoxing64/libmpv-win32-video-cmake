@@ -23,6 +23,7 @@ ExternalProject_Add(mpv-release
         libass
         libjpeg
         libpng
+        luajit
         uchardet
         shaderc
         spirv-cross
@@ -46,7 +47,7 @@ ExternalProject_Add(mpv-release
         ${mpv_lto_mode}
         -Dlibmpv=true
         -Dpdf-build=enabled
-        -Dlua=disabled
+        -Dlua=enabled
         -Djavascript=disabled
         -Duchardet=enabled
         -Dlcms2=enabled
