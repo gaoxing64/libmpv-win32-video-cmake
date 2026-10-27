@@ -20,6 +20,11 @@ on:
         required: false
         default: false
         type: boolean
+      bits:
+        description: 'Comma separated arch list to build (default: all)'
+        required: false
+        default: 'i686,x86_64,x86_64_v3,aarch64'
+        type: string
 
 jobs:
   build_mpv:
@@ -29,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        bit: [i686, x86_64, x86_64_v3, aarch64]
+        bit: ${{ fromJson(format('["{0}"]', join(split(github.event.inputs.bits || 'i686,x86_64,x86_64_v3,aarch64', ','))) }} }}
     env:
       BIT: ${{ matrix.bit }}
     container:
