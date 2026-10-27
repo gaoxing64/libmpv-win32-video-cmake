@@ -6,7 +6,9 @@ ExternalProject_Add(shaderc
     GIT_REPOSITORY https://github.com/google/shaderc.git
     SOURCE_DIR ${SOURCE_LOCATION}
     GIT_REMOTE_NAME origin
-    GIT_TAG main
+    # Pinned: this revision's DEPS pins the glslang/spirv-headers/spirv-tools
+    # revisions used below, so the shader toolchain stays self-consistent.
+    GIT_TAG 5bcaaaec711d
     GIT_CLONE_FLAGS "--filter=tree:0"
     UPDATE_COMMAND ""
     CONFIGURE_COMMAND ${EXEC} LTO_JOB=1 CONF=1 cmake -H<SOURCE_DIR> -B<BINARY_DIR>
